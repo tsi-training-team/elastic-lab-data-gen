@@ -31,7 +31,7 @@ def _clamp(value: float, low: float, high: float) -> float:
     return max(low, min(high, value))
 
 
-def generate_docs(count: int, seed: int, start_time: str, hours: int):
+def generate_docs(count: int, seed: Optional[int], start_time: str, hours: int):
     rng = init_rng(seed)
     start = parse_start_time(start_time, hours)
 
