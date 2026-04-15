@@ -2,6 +2,7 @@ import argparse
 import base64
 import json
 import random
+import time
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
@@ -38,6 +39,19 @@ def add_common_args(parser: argparse.ArgumentParser, default_count: int) -> argp
         help="Start timestamp in ISO8601 (default: now-<hours>)",
     )
     parser.add_argument("--hours", type=int, default=24, help="Time window span in hours")
+    parser.add_argument("--continuous", action="store_true", help="Continuously generate/index batches")
+    parser.add_argument(
+        "--interval-seconds",
+        type=int,
+        default=10,
+        help="Sleep interval between batches in continuous mode",
+    )
+    parser.add_argument(
+        "--max-iterations",
+        type=int,
+        default=0,
+        help="Maximum batches in continuous mode (0 = run forever)",
+    )
     return parser
 
 
@@ -185,3 +199,13 @@ def print_summary(index: str, generated: int, indexed: int, failures: int, dry_r
     if errors:
         for err in list(errors)[:5]:
             print(f"  error: {err}")
+
+
+def iteration_seed(seed: Optional[int], iteration: int) -> Optional[int]:
+    if seed is None:
+        return None
+    return seed + iteration
+
+
+def sleep_between_iterations(interval_seconds: int) -> None:
+    time.sleep(max(1, interval_seconds))

@@ -16,6 +16,8 @@ from common import (
     parse_start_time,
     print_summary,
     random_attack_ip,
+    iteration_seed,
+    sleep_between_iterations,
 )
 
 AUTH_INDEX = "lab-auth"
@@ -144,21 +146,38 @@ def _build_attack_docs(count: int, seed: int, start_time: str, hours: int):
 
 def main():
     args = build_parser().parse_args()
-    docs_by_index = _build_attack_docs(args.count, args.seed, args.start_time, args.hours)
+    iteration = 0
+    try:
+        while True:
+            docs_by_index = _build_attack_docs(
+                args.count,
+                iteration_seed(args.seed, iteration),
+                args.start_time,
+                args.hours,
+            )
 
-    for index, docs in docs_by_index.items():
-        if args.dry_run:
-            print_summary(index, len(docs), 0, 0, True)
-            continue
+            for index, docs in docs_by_index.items():
+                if args.dry_run:
+                    print_summary(index, len(docs), 0, 0, True)
+                    continue
 
-        indexed, failures, errors = bulk_index(
-            args.es_url,
-            index,
-            docs,
-            username=args.username,
-            password=args.password,
-        )
-        print_summary(index, len(docs), indexed, failures, False, errors)
+                indexed, failures, errors = bulk_index(
+                    args.es_url,
+                    index,
+                    docs,
+                    username=args.username,
+                    password=args.password,
+                )
+                print_summary(index, len(docs), indexed, failures, False, errors)
+
+            iteration += 1
+            if not args.continuous:
+                break
+            if args.max_iterations > 0 and iteration >= args.max_iterations:
+                break
+            sleep_between_iterations(args.interval_seconds)
+    except KeyboardInterrupt:
+        print("Interrupted; exiting.")
 
 
 if __name__ == "__main__":

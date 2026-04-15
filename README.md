@@ -43,11 +43,15 @@ Every script supports:
 - `--seed`
 - `--start-time`
 - `--hours`
+- `--continuous`
+- `--interval-seconds`
+- `--max-iterations`
 
 Behavior:
 - `--dry-run`: generate only, no indexing requests.
 - no `--dry-run` + valid `--es-url`: index with Elasticsearch `_bulk`.
 - no credentials provided: requests are sent unauthenticated.
+- `--continuous`: keep generating/indexing batches until interrupted (or `--max-iterations` is reached).
 
 ## Usage Examples
 
@@ -60,6 +64,33 @@ python generate_orders.py --dry-run --count 1200 --seed 42
 python generate_system.py --dry-run --count 2200 --seed 42
 python inject_attack.py --dry-run --count 200 --seed 42
 ```
+
+Continuous examples for alert labs:
+
+```bash
+python generate_auth.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD --continuous --interval-seconds 10 --count 200
+python generate_web.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD --continuous --interval-seconds 10 --count 300
+```
+
+Bounded continuous runs (useful for testing):
+
+```bash
+python generate_system.py --dry-run --continuous --max-iterations 3 --interval-seconds 1 --count 100 --seed 42
+```
+
+## systemd (non-blocking background)
+
+For Terraform/user-data setups where generation should run in the background, use the ready-made units in `systemd/`.
+
+Quick start:
+
+```bash
+sudo cp systemd/elastic-lab-data-gen.env.example /etc/elastic-lab-data-gen.env
+sudo vi /etc/elastic-lab-data-gen.env
+sudo bash systemd/install_services.sh
+```
+
+See `systemd/README.md` for full details.
 
 Indexing examples:
 

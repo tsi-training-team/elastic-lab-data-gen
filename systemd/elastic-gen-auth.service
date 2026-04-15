@@ -1,0 +1,15 @@
+[Unit]
+Description=Elastic Lab Auth Generator (continuous)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/elastic-lab-data-gen.env
+WorkingDirectory=/
+ExecStart=/bin/bash -lc 'cd "$REPO_DIR" && exec "$PYTHON_BIN" generate_auth.py --es-url "$ES_URL" --username "$ES_USERNAME" --password "$ES_PASSWORD" --continuous --interval-seconds "$INTERVAL_SECONDS" --hours "$HOURS" --count "$AUTH_COUNT" ${SEED:+--seed "$SEED"} ${START_TIME:+--start-time "$START_TIME"}'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

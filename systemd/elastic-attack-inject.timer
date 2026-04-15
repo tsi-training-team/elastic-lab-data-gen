@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Elastic Lab Attack Injector every 30 minutes
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=30min
+Unit=elastic-attack-inject.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Elastic Lab Attack Injector (oneshot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/elastic-lab-data-gen.env
+WorkingDirectory=/
+ExecStart=/bin/bash -lc 'cd "$REPO_DIR" && exec "$PYTHON_BIN" inject_attack.py --es-url "$ES_URL" --username "$ES_USERNAME" --password "$ES_PASSWORD" --hours "$HOURS" --count 180 ${SEED:+--seed "$SEED"} ${START_TIME:+--start-time "$START_TIME"}'

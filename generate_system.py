@@ -13,6 +13,8 @@ from common import (
     print_summary,
     random_internal_ip,
     random_timestamp,
+    iteration_seed,
+    sleep_between_iterations,
     weighted_choice,
 )
 
@@ -94,20 +96,36 @@ def generate_docs(count: int, seed: int, start_time: str, hours: int):
 
 def main():
     args = build_parser().parse_args()
-    docs = generate_docs(args.count, args.seed, args.start_time, args.hours)
+    iteration = 0
+    try:
+        while True:
+            docs = generate_docs(
+                args.count,
+                iteration_seed(args.seed, iteration),
+                args.start_time,
+                args.hours,
+            )
 
-    if args.dry_run:
-        print_summary(INDEX, len(docs), 0, 0, True)
-        return
+            if args.dry_run:
+                print_summary(INDEX, len(docs), 0, 0, True)
+            else:
+                indexed, failures, errors = bulk_index(
+                    args.es_url,
+                    INDEX,
+                    docs,
+                    username=args.username,
+                    password=args.password,
+                )
+                print_summary(INDEX, len(docs), indexed, failures, False, errors)
 
-    indexed, failures, errors = bulk_index(
-        args.es_url,
-        INDEX,
-        docs,
-        username=args.username,
-        password=args.password,
-    )
-    print_summary(INDEX, len(docs), indexed, failures, False, errors)
+            iteration += 1
+            if not args.continuous:
+                break
+            if args.max_iterations > 0 and iteration >= args.max_iterations:
+                break
+            sleep_between_iterations(args.interval_seconds)
+    except KeyboardInterrupt:
+        print("Interrupted; exiting.")
 
 
 if __name__ == "__main__":
