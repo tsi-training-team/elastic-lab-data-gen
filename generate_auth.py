@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from typing import Optional
 
 from common import (
     HOSTS,
@@ -29,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
     return add_common_args(parser, default_count=2000)
 
 
-def generate_docs(count: int, seed: int, start_time: str, hours: int):
+def generate_docs(count: int, seed: Optional[int], start_time: str, hours: int):
     rng = init_rng(seed)
     start = parse_start_time(start_time, hours)
 

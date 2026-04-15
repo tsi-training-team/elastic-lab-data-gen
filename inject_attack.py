@@ -3,6 +3,7 @@ import argparse
 import uuid
 from collections import defaultdict
 from datetime import timedelta
+from typing import Optional
 
 from common import (
     ORGANIZATION_NAME,
@@ -30,7 +31,7 @@ def build_parser() -> argparse.ArgumentParser:
     return add_common_args(parser, default_count=200)
 
 
-def _build_attack_docs(count: int, seed: int, start_time: str, hours: int):
+def _build_attack_docs(count: int, seed: Optional[int], start_time: str, hours: int):
     rng = init_rng(seed)
     start = parse_start_time(start_time, hours)
 
