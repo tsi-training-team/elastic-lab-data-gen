@@ -63,6 +63,7 @@ python generate_auth.py --dry-run --count 1800 --seed 42
 python generate_orders.py --dry-run --count 1200 --seed 42
 python generate_system.py --dry-run --count 2200 --seed 42
 python inject_attack.py --dry-run --count 200 --seed 42
+python seed_lab1.py --dry-run --count 700 --seed 42
 ```
 
 Continuous examples for alert labs:
@@ -100,6 +101,7 @@ python generate_auth.py --es-url http://localhost:9200 --username elastic --pass
 python generate_orders.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD
 python generate_system.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD
 python inject_attack.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD --count 180
+python seed_lab1.py --es-url http://localhost:9200 --username elastic --password YOUR_PASSWORD --count 700 --seed 42
 ```
 
 Generate narrower windows:
@@ -130,6 +132,12 @@ python generate_system.py --es-url http://localhost:9200 --start-time 2026-04-14
 - `inject_attack.py`
 - injects an investigation scenario across auth/web (+optional order)
 - includes password spraying from one source IP, one successful login, and follow-on activity linked by user/session/trace
+
+- `seed_lab1.py`
+- one-time guaranteed seed for Lab 1 ES|QL exercises across all indices
+- ensures baseline scenarios like endpoint counts, 500s/slow web requests, failed logins by user/IP, one-IP-many-users spray, success after failures, and cross-index user/IP timeline events
+- exact scenario contract is documented in `tests/seed_lab1_contract.json`
+- query-to-scenario mapping is documented in `tests/lab1_query_coverage.md`
 
 ## Reset / Cleanup
 

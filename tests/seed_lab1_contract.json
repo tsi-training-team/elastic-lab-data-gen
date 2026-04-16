@@ -1,0 +1,61 @@
+{
+  "description": "Hard contract for Lab 1 seed data used by Confluence ES|QL queries",
+  "indices": ["lab-auth", "lab-web-access", "lab-orders", "lab-system"],
+  "required_users": [
+    "user-010",
+    "user-020",
+    "user-030",
+    "user-050",
+    "user-075",
+    "user-090",
+    "user-100"
+  ],
+  "required_source_ips": [
+    "185.220.101.21",
+    "91.92.109.77",
+    "198.51.100.23"
+  ],
+  "auth_contract": {
+    "failure_heavy_ip": {
+      "source_ip": "185.220.101.21",
+      "minimum_failures": 20,
+      "minimum_users_targeted": 10
+    },
+    "single_failure_ip": {
+      "source_ip": "203.0.113.10",
+      "failures_exact": 1
+    },
+    "users": {
+      "user-050": {"min_failures": 6, "min_successes": 1},
+      "user-075": {"min_failures": 11, "successes_exact": 0},
+      "user-010": {"min_failures": 1, "min_successes": 1}
+    }
+  },
+  "web_contract": {
+    "required_paths": ["/cart", "/login", "/checkout", "/products"],
+    "status_minimums": {
+      "200": 20,
+      "404": 10,
+      "500": 20
+    },
+    "query_path_minimums": {
+      "/cart": 20,
+      "/login": 20,
+      "/checkout": 20,
+      "/products": 20
+    }
+  },
+  "cross_index_contract": {
+    "auth_web_users": ["user-010", "user-050", "user-075"],
+    "auth_orders_users": ["user-010", "user-020", "user-030", "user-050", "user-090"],
+    "auth_web_orders_users": ["user-100", "user-075", "user-050"],
+    "source_ip_multi_dataset": {
+      "185.220.101.21": ["auth", "web.access", "commerce.orders"],
+      "91.92.109.77": ["auth", "web.access"],
+      "198.51.100.23": ["auth", "web.access"]
+    }
+  },
+  "orders_contract": {
+    "user-050": {"requires_order_total_gt": 1000}
+  }
+}
