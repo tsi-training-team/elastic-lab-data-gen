@@ -22,7 +22,9 @@ systemctl enable --now elastic-gen-web.service
 systemctl enable --now elastic-gen-auth.service
 systemctl enable --now elastic-gen-orders.service
 systemctl enable --now elastic-gen-system.service
+systemctl enable --now elastic-attack-inject.service
 
-echo "Enabled and started: web/auth/orders/system generators"
-echo "Optional attack timer: systemctl enable --now elastic-attack-inject.timer"
+echo "Enabled and started: web/auth/orders/system/attack generators"
+echo "Optional burst mode instead: systemctl enable --now elastic-attack-inject.timer"
+echo "If using timer mode, disable service mode first: systemctl disable --now elastic-attack-inject.service"
 echo "Check status with: systemctl status elastic-gen-web.service"

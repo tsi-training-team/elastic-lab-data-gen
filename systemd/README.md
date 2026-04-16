@@ -8,8 +8,8 @@ This folder contains ready-to-copy `systemd` units for non-blocking continuous g
 - `elastic-gen-auth.service`
 - `elastic-gen-orders.service`
 - `elastic-gen-system.service`
-- `elastic-attack-inject.service` (oneshot)
-- `elastic-attack-inject.timer` (optional periodic attack scenario)
+- `elastic-attack-inject.service` (continuous stream)
+- `elastic-attack-inject.timer` (optional periodic burst mode)
 - `elastic-lab-data-gen.env.example`
 - `install_services.sh`
 
@@ -29,11 +29,14 @@ This folder contains ready-to-copy `systemd` units for non-blocking continuous g
 - Restart one: `systemctl restart elastic-gen-web.service`
 - Stop one: `systemctl stop elastic-gen-web.service`
 
-## Optional Attack Scenario Timer
+Attack service is now installed/enabled by default for continuous attack events.
 
-Enable periodic attack injections:
+## Optional Attack Burst Mode (Timer)
+
+If you prefer periodic bursts instead of a stream:
 
 ```bash
+sudo systemctl disable --now elastic-attack-inject.service
 sudo systemctl enable --now elastic-attack-inject.timer
 ```
 
